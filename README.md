@@ -131,7 +131,7 @@ curl -g -i -X POST \
 	}
 }' "http://3.235.236.245/compute/v2.1/servers"
 ```
-name은 사용자id로 해주시면 됩니다.
+name은 사용자id로 해주시면 됩니다.    
 imageRef는 code-server가 설치되어있는 ubuntucdr-1.0이라는 이름의 이미지를 사용할것이며, 다음과 같은 요청으로 [image_id]를 얻을 수 있습니다.
 ```bash
 curl -X GET \
