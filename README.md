@@ -198,4 +198,4 @@ curl -X POST \
 ```
 name에는 사용자id를, [floating_addr]은 위에서 할당된 floating ip 값을 넣어주면 됩니다.
 
-위의 과정을 거치고 나면 http://3.235.236.245:8989/newuser123/ 으로 ide에 접속할 수 있게 됩니다.
+위의 과정을 거치고 나면 http://3.235.236.245:8989/newuser1234/ 으로 ide에 접속할 수 있게 됩니다.
