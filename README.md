@@ -66,7 +66,12 @@ curl -s -X PUT \
 -H "X-Auth-Token: $OS_TOKEN" \
 "http://3.235.236.245/identity/v3/projects/[project id]/users/[user id]/roles/[role id]"\
 ```
-project id는 위에 언급한 방식으로,
+project id는 위에 언급한 방식으로,    
+```bash
+curl -X GET \
+ -H "X-Auth-Token: $OS_TOKEN" \
+ "http://3.235.236.245/identity/v3/projects" | python -m json.tool | jq '.projects[]' | jq 'select(.name == "demo")' | jq '.id'
+```
 user id는
 ```bash
 curl -X GET  -H "X-Auth-Token: $OS_TOKEN"  "http://3.235.236.245/identity/v3/users" | python -m json.tool | jq '.users[]' | jq 'select(.name == "[유저id]")' | jq '.id'
