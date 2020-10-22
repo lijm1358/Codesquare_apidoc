@@ -1,7 +1,6 @@
 # Codesquare_apidoc
 keystone 유저 생성부터 vm생성까지 필요한 api 요청입니다.    
 최종적으로 모든 요청을 다 보내게 되면 http://3.235.236.245:8989/[사용자id] 주소를 통해 ide를 띄울 수 있게 됩니다.    
-회원가입 시, VM생성이 동시에 이루어지는 방식으로 되고자 합니다.
 ## 계정 생성
 
 ### admim 토큰 얻기
@@ -177,7 +176,7 @@ fixed_ip_address는 인스턴스 생성 시 자동으로 할당되는 내부 ip�
 ```bash
 curl -X GET -H "X-Auth-Token: $OS_TOKEN" "http://3.235.236.245/compute/v2.1/servers/[instance id]" | python -m json.tool | jq '.server.addresses.private[]' | jq 'select(."OS-EXT-IPS:type" == "fixed")' | jq 'select(.version == 4)' | jq '.addr'
 ```
-[instance id]는 생성한 instance의 id값을 넣어주면 됩니다.
+* [instance id]는 생성한 instance의 id값을 넣어주면 됩니다.
 port_id는 생성한 instance 인터페이스의 포트 id이며, 다음과 같은 요청으로 [port_id]를 얻을 수 있습니다.
 ```bash
 curl -X GET \
