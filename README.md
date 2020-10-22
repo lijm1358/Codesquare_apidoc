@@ -64,19 +64,19 @@ curl -X GET \
 ```bash
 curl -s -X PUT \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://3.235.236.245/identity/v3/projects/[project id]/users/[user id]/roles/[role id]"\
+"http://3.235.236.245/identity/v3/projects/[project_id]/users/[user_id]/roles/[role_id]"\
 ```
-project id는 위에 언급한 방식으로,    
+[project_id]는 위에 언급한 방식으로,    
 ```bash
 curl -X GET \
  -H "X-Auth-Token: $OS_TOKEN" \
  "http://3.235.236.245/identity/v3/projects" | python -m json.tool | jq '.projects[]' | jq 'select(.name == "demo")' | jq '.id'
 ```
-user id는
+[user_id]는
 ```bash
-curl -X GET  -H "X-Auth-Token: $OS_TOKEN"  "http://3.235.236.245/identity/v3/users" | python -m json.tool | jq '.users[]' | jq 'select(.name == "[유저id]")' | jq '.id'
+curl -X GET  -H "X-Auth-Token: $OS_TOKEN"  "http://3.235.236.245/identity/v3/users" | python -m json.tool | jq '.users[]' | jq 'select(.name == "[사용자id]")' | jq '.id'
 ```
-role id는
+[role_id]는
 ```bash
 curl -X GET  -H "X-Auth-Token: $OS_TOKEN"  "http://3.235.236.245/identity/v3/roles" | python -m json.tool | jq '.roles[]' | jq 'select(.name == "user")' | jq '.id'
 ```
