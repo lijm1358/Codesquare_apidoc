@@ -94,7 +94,7 @@ curl -i -H "Content-Type: application/json" \
         "methods": ["password"],
             "password": {
                 "user": {
-                    "name": "newuser123",
+                    "name": "newuser1234",
                     "domain": { 
                         "id": "default" 
                        },
@@ -123,7 +123,7 @@ curl -g -i -X POST \
 -H "X-Auth-Token:$OS_TOKEN" \
 -d '
 {"server": {
-	"name":"user123",
+	"name":"newuser1234",
 	"imageRef":[image_id],
 	"flavorRef":"d3",
 	"networks":[{"uuid":[network_id]}],
@@ -193,7 +193,7 @@ curl -X GET \
 curl -X POST \
 -H "Content-Type: application/json" \
 -d '
-{"name": "newuser123", "addr": [floating_addr]}
+{"name": "newuser1234", "addr": [floating_addr]}
 ' "http://3.235.236.245:8890/urlinfo"
 ```
 name에는 사용자id를, [floating_addr]은 위에서 할당된 floating ip 값을 넣어주면 됩니다.
