@@ -151,6 +151,7 @@ curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
 "http://3.235.236.245:9696/v2.0/networks" | python -m json.tool | jq '.networks[]' | jq 'select(.name == "private")' | jq '.id'
 ```
+* 인스턴스 생성 시, 유동 ip 할당을 위해 **인스턴스 id**를 미리 저장해둡니다.
 ## VM 설정 및 외부 ip 주소와 코드서버 연결
 
 ### 생성된 인스턴스에 유동 ip 할당
