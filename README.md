@@ -44,7 +44,7 @@ curl -X POST \
  -H "Content-Type: application/json" \
  -d '
 {"user": {
-    "default_project_id": [project id],
+    "default_project_id": [project_id],
     "name": "newuser1234",
     "password": "qwerty"
     }
@@ -52,15 +52,11 @@ curl -X POST \
 "http://3.235.236.245/identity/v3/users" | python -m json.tool
 ```
 
-default_project_id에 들어갈 값은 아래와 같은 방식으로 얻을 수 있습니다.
+default_project_id에는 demo 프로젝트(테스트용, 추후 변경 예정)의 id값이 필요하므로, [project_id]는 아래와 같은 방식으로 얻을 수 있습니다.
 ```bash
 curl -X GET \
  -H "X-Auth-Token: $OS_TOKEN" \
- "http://3.235.236.245/identity/v3/projects" | python -m json.tool
-```
-demo 프로젝트의 id 값을 얻어야 하므로 jq를 이용해 해당 구문을 붙여 id만을 얻어옵니다.
-```bash
-jq '.projects[]' | jq 'select(.name == "demo")' | jq '.id'
+ "http://3.235.236.245/identity/v3/projects" | python -m json.tool | jq '.projects[]' | jq 'select(.name == "demo")' | jq '.id'
 ```
 
 ### 만든 유저를 demo 프로젝트에 할당 및 user 역할 배정
