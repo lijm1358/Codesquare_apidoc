@@ -64,7 +64,7 @@ curl -X GET \
 ```bash
 curl -s -X PUT \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://3.236.100.160/identity/v3/projects/[project_id]/users/[user_id]/roles/[role_id]"\
+"http://3.236.100.160/identity/v3/projects/[project_id]/users/[user_id]/roles/[role_id]"
 ```
 [project_id]는 위에 언급한 방식으로,    
 ```bash
@@ -183,7 +183,7 @@ curl -X GET -H "X-Auth-Token: $OS_TOKEN" "http://3.236.100.160/compute/v2.1/serv
 port_id는 생성한 instance 인터페이스의 포트 id이며, 다음과 같은 요청으로 [port_id]를 얻을 수 있습니다.
 ```bash
 curl -X GET \
--H "X-Auth-Token: $OS_TOKEN" \ 
+-H "X-Auth-Token: $OS_TOKEN" \
 "http://3.236.100.160:9696/v2.0/ports" | python -m json.tool | jq '.ports[]' | jq 'select(.fixed_ips[].ip_address == [fixed_addr])' | jq '.id'
 ```
 [fixed_addr]는 위의 fixed_ip_address에 들어가는 [address]값(인스턴스의 내부 고정 ip주소)을 넣어주면 됩니다.
