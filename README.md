@@ -127,7 +127,8 @@ curl -g -i -X POST \
 	"imageRef":[image_id],
 	"flavorRef":"d3",
 	"networks":[{"uuid":[network_id]}],
-	"security_groups": [{"name": "default"}]
+	"security_groups": [{"name": "default"}],
+	"block_device_mapping_v2.delete_on_termination": true
 	}
 }' "http://3.236.100.160/compute/v2.1/servers"
 ```
@@ -176,7 +177,9 @@ curl -X GET \
 ```
 fixed_ip_address는 인스턴스 생성 시 자동으로 할당되는 내부 ip주소이며, 다음과 같은 요청으로 [address]를 얻을 수 있습니다.
 ```bash
-curl -X GET -H "X-Auth-Token: $OS_TOKEN" "http://3.236.100.160/compute/v2.1/servers/[instance id]" | python -m json.tool | jq '.server.addresses.private[]' | jq 'select(."OS-EXT-IPS:type" == "fixed")' | jq 'select(.version == 4)' | jq '.addr'
+curl -X GET \
+-H "X-Auth-Token: $OS_TOKEN" \
+"http://3.236.100.160/compute/v2.1/servers/[instance id]" | python -m json.tool | jq '.server.addresses.private[]' | jq 'select(."OS-EXT-IPS:type" == "fixed")' | jq 'select(.version == 4)' | jq '.addr'
 ```
 * [instance id]는 생성한 instance의 id값을 넣어주면 됩니다.    
     
@@ -199,3 +202,44 @@ curl -X POST \
 name에는 사용자id를, [floating_addr]은 위에서 할당된 floating ip 값을 넣어주면 됩니다.
 
 위의 과정을 거치고 나면 http://3.236.100.160:8989/newuser1234/ 으로 ide에 접속할 수 있게 됩니다.
+
+## VM 삭제
+
+### 유동 ip 해제 및 삭제
+```bash
+curl -X GET \
+-H "X-Auth-Token: $OS_TOKEN" \
+"http://3.236.100.160:9696/v2.0/[floatingIp_id]" | python -m json.tool
+```
+[floatingIp_id]는 다음과 같은 방법으로 얻을 수 있습니다.
+```bash
+curl -X GET \
+-H "X-Auth-Token: $OS_TOKEN" \
+"http://3.236.100.160:9696/v2.0/floatingips" | python -m json.tool | jq '.floatingips[]' | jq 'select(.floating_ip_address == [floating_ip])' | jq '.id'
+```
+[floating_ip]는 다음과 같은 방법으로 얻을 수 있습니다.
+```bash
+curl -X GET \
+-H "X-Auth-Token: $OS_TOKEN" \
+"http://3.236.100.160/compute/v2.1/servers/[instance_id]" | python -m json.tool | jq '.server.addresses.private[]' | jq 'select(."OS-EXT-IPS:type" == "floating")' | jq 'select(.version == 4)' | jq '.addr'
+```
+
+### Openstack Instance 삭제
+```bash
+curl -X DELETE \
+-H "X-Auth-Token:$OS_TOKEN" \
+"http://3.236.100.160/compute/v2.1/servers/[Instance_Id]"
+```
+[Instance_Id]는 다음과 같은 방법으로 얻을 수 있습니다.
+```bash
+curl -X GET \
+-H "X-Auth-Token: $OS_TOKEN" \
+"http://3.236.100.160/compute/v2.1/servers?all_tenants" | python -m json.tool | jq '.servers[]' | jq 'select(.name == [사용자id])' | jq '.id'
+```
+
+### url 연결 해제
+```bash
+curl -X DELETE \
+"http://3.236.100.160:8890/urlinfo/[사용자id]"
+```
+
