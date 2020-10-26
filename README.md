@@ -127,8 +127,7 @@ curl -g -i -X POST \
 	"imageRef":[image_id],
 	"flavorRef":"d3",
 	"networks":[{"uuid":[network_id]}],
-	"security_groups": [{"name": "default"}],
-	"block_device_mapping_v2.delete_on_termination": true
+	"security_groups": [{"name": "default"}]
 	}
 }' "http://3.236.100.160/compute/v2.1/servers"
 ```
