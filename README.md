@@ -19,7 +19,7 @@ curl -i -H "Content-Type: application/json" \
                     "domain": { 
                         "id": "default" 
                        },
-                    "password": "1234"
+                    "password": "password"
                    }
               }
          },
@@ -125,7 +125,7 @@ curl -g -i -X POST \
 {"server": {
 	"name":"newuser1234",
 	"imageRef":[image_id],
-	"flavorRef":"2",
+	"flavorRef":"d2",
 	"networks":[{"uuid":[network_id]}],
 	"security_groups": [{"name": "cdr-rule"}],
 	"availability_zone": "nova:codesquare-devstack-compute2"
@@ -139,7 +139,7 @@ curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
 "http://34.64.118.138/compute/v2.1/images" | python -m json.tool | jq '.images[]' | jq 'select(.name == "ubuntucdr-1.0")' | jq '.id'
 ```
-flavorRef는 m1.micro (vCPU:1, RAM:2 GB, HDD: 20 GB) 사양을 이용할것이며 위처럼 2로 설정해주면 됩니다.
+flavorRef는 ds1G (vCPU:1, RAM:1 GB, HDD: 10 GB) 사양을 이용할것이며 위처럼 d2로 설정해주면 됩니다.
 만약, 사양 변경 시 다음과 같은 요청으로 flavor 목록을 확인할 수 있습니다.
 ```bash
 curl -X GET \
@@ -231,15 +231,16 @@ curl -X POST \
 ```
 name에는 사용자id를, [floating_addr]은 위에서 할당된 floating ip 값을 넣어주면 됩니다.
 
-위의 과정을 거치고 나면 http://3.236.100.160:8989/newuser1234/ 으로 ide에 접속할 수 있게 됩니다.
+위의 과정을 거치고 나면 http://ide.codesquare.space:8989/newuser1234/ 으로 ide에 접속할 수 있게 됩니다.
 
 ## VM 삭제
 
 ### 유동 ip 해제 및 삭제
 ```bash
-curl -X GET \
+curl -X DELETE \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138:9999/v2.0/[floatingIp_id]" | python -m json.tool
+-H "Accept: application/json" \
+"http://34.64.118.138:9999/v2.0/floatingips/[floatingIp_id]" | python -m json.tool
 ```
 [floatingIp_id]는 다음과 같은 방법으로 얻을 수 있습니다.
 ```bash
@@ -251,7 +252,7 @@ curl -X GET \
 ```bash
 curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138/compute/v2.1/servers/[instance_id]" | python -m json.tool | jq '.server.addresses.private[]' | jq 'select(."OS-EXT-IPS:type" == "floating")' | jq 'select(.version == 4)' | jq '.addr'
+"http://34.64.118.138/compute/v2.1/servers/7fc53fb9-2fbc-43ae-9759-0c9c85c5933c" | python -m json.tool | jq '.server.addresses' | jq '.["heat-net"][]' | jq 'select(."OS-EXT-IPS:type" == "floating")' | jq '.addr'
 ```
 
 ### Openstack Instance 삭제
