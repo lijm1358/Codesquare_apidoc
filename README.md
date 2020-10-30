@@ -9,6 +9,7 @@ keystone 유저 생성부터 vm생성까지 필요한 api 요청입니다.
 4. 네트워크 관련 요청 url주소 포트가 바뀌었습니다.(9696 -> 9999)
 #### 10.30
 1. url ip주소에서 도메인으로 변경(34.64.118.138 -> stack.codesquare.space)
+2. 인스턴스 삭제 부분 수정 및 테스트 
 ## 계정 생성
 
 ### admim 토큰 얻기
@@ -259,8 +260,7 @@ curl -X GET \
 [floating_ip]는 다음과 같은 방법으로 얻을 수 있습니다.
 ```bash
 curl -X GET \
--H "X-Auth-Token: $OS_TOKEN" \
-"http://stack.codesquare.space/compute/v2.1/servers/7fc53fb9-2fbc-43ae-9759-0c9c85c5933c" | python -m json.tool | jq '.server.addresses' | jq '.["heat-net"][]' | jq 'select(."OS-EXT-IPS:type" == "floating")' | jq '.addr'
+"http://34.64.118.138:8890/urlinfo/[사용자id]" | python -m json.tool | jq '.addr'
 ```
 
 ### Openstack Instance 삭제
