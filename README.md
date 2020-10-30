@@ -7,6 +7,8 @@ keystone 유저 생성부터 vm생성까지 필요한 api 요청입니다.
 2. 계정 생성 시 default 프로젝트, 연결 프로젝트 및 일반 사용자 토큰 요청시 프로젝트명이 바뀌었습니다.(demo -> codesquare)
 3. 인스턴스 생성 시 flavor 및 "availability_zone" 항목이 추가되었습니다.
 4. 네트워크 관련 요청 url주소 포트가 바뀌었습니다.(9696 -> 9999)
+#### 10.30
+1. url ip주소에서 도메인으로 변경(34.64.118.138 -> stack.codesquare.space)
 ## 계정 생성
 
 ### admim 토큰 얻기
@@ -37,7 +39,7 @@ curl -i -H "Content-Type: application/json" \
          }
     }
 }' \
-"http://34.64.118.138/identity/v3/auth/tokens" | grep X-Subject-Token
+"http://stack.codesquare.space/identity/v3/auth/tokens" | grep X-Subject-Token
 ```
 위의 코드 실행 시 X-Subject-Token: [token] 형식으로 토큰 발급이 가능합니다.    
 해당 토큰을 따로 변수 등($OS_TOKEN)으로 저장시켜서 사용하시면 될 거 같습니다.
@@ -55,14 +57,14 @@ curl -X POST \
     "password": "qwerty"
     }
 }' \
-"http://34.64.118.138/identity/v3/users" | python -m json.tool
+"http://stack.codesquare.space/identity/v3/users" | python -m json.tool
 ```
 
 default_project_id에는 codesquare 프로젝트의 id값이 필요하므로, [project_id]는 아래와 같은 방식으로 얻을 수 있습니다.
 ```bash
 curl -X GET \
  -H "X-Auth-Token: $OS_TOKEN" \
- "http://34.64.118.138/identity/v3/projects" | python -m json.tool | jq '.projects[]' | jq 'select(.name == "codesquare")' | jq '.id'
+ "http://stack.codesquare.space/identity/v3/projects" | python -m json.tool | jq '.projects[]' | jq 'select(.name == "codesquare")' | jq '.id'
 ```
 
 ### 만든 유저를 codesquare 프로젝트에 할당 및 user 역할 배정
@@ -70,21 +72,21 @@ curl -X GET \
 ```bash
 curl -s -X PUT \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138/identity/v3/projects/[project_id]/users/[user_id]/roles/[role_id]"
+"http://stack.codesquare.space/identity/v3/projects/[project_id]/users/[user_id]/roles/[role_id]"
 ```
 [project_id]는 위에 언급한 방식으로,    
 ```bash
 curl -X GET \
  -H "X-Auth-Token: $OS_TOKEN" \
- "http://34.64.118.138/identity/v3/projects" | python -m json.tool | jq '.projects[]' | jq 'select(.name == "codesquare")' | jq '.id'
+ "http://stack.codesquare.space/identity/v3/projects" | python -m json.tool | jq '.projects[]' | jq 'select(.name == "codesquare")' | jq '.id'
 ```
 [user_id]는
 ```bash
-curl -X GET  -H "X-Auth-Token: $OS_TOKEN"  "http://34.64.118.138/identity/v3/users" | python -m json.tool | jq '.users[]' | jq 'select(.name == "[사용자id]")' | jq '.id'
+curl -X GET  -H "X-Auth-Token: $OS_TOKEN"  "http://stack.codesquare.space/identity/v3/users" | python -m json.tool | jq '.users[]' | jq 'select(.name == "[사용자id]")' | jq '.id'
 ```
 [role_id]는
 ```bash
-curl -X GET  -H "X-Auth-Token: $OS_TOKEN"  "http://34.64.118.138/identity/v3/roles" | python -m json.tool | jq '.roles[]' | jq 'select(.name == "user")' | jq '.id'
+curl -X GET  -H "X-Auth-Token: $OS_TOKEN"  "http://stack.codesquare.space/identity/v3/roles" | python -m json.tool | jq '.roles[]' | jq 'select(.name == "user")' | jq '.id'
 ```
 와 같은 방법으로 id값을 얻어올 수 있습니다.
 
@@ -116,7 +118,7 @@ curl -i -H "Content-Type: application/json" \
          }
     }
 }' \
-"http://34.64.118.138/identity/v3/auth/tokens" | grep X-Subject-Token 
+"http://stack.codesquare.space/identity/v3/auth/tokens" | grep X-Subject-Token 
 ```
 
 ### 만든 유저의 token을 이용해 인스턴스 생성
@@ -136,27 +138,27 @@ curl -g -i -X POST \
 	"security_groups": [{"name": "cdr-rule"}],
 	"availability_zone": "nova:codesquare-devstack-compute2"
 	}
-}' "http://34.64.118.138/compute/v2.1/servers"
+}' "http://stack.codesquare.space/compute/v2.1/servers"
 ```
 name은 사용자id로 해주시면 됩니다.    
 imageRef는 code-server가 설치되어있는 ubuntucdr-1.0이라는 이름의 이미지를 사용할것이며, 다음과 같은 요청으로 [image_id]를 얻을 수 있습니다.
 ```bash
 curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138/compute/v2.1/images" | python -m json.tool | jq '.images[]' | jq 'select(.name == "ubuntucdr-1.0")' | jq '.id'
+"http://stack.codesquare.space/compute/v2.1/images" | python -m json.tool | jq '.images[]' | jq 'select(.name == "ubuntucdr-1.0")' | jq '.id'
 ```
 flavorRef는 ds1G (vCPU:1, RAM:1 GB, HDD: 10 GB) 사양을 이용할것이며 위처럼 d2로 설정해주면 됩니다.
 만약, 사양 변경 시 다음과 같은 요청으로 flavor 목록을 확인할 수 있습니다.
 ```bash
 curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138/compute/v2.1/flavors" | python -m json.tool
+"http://stack.codesquare.space/compute/v2.1/flavors" | python -m json.tool
 ```
 networks의 uuid는 codesquare 프로젝트에 설정되어있는 heat-net 네트워크를 사용할 것이며, 다음과 같은 요청으로 [network_id]를 얻을 수 있습니다.
 ```bash
 curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138:9999/v2.0/networks" | python -m json.tool | jq '.networks[]' | jq 'select(.name == "heat-net")' | jq '.id'
+"http://stack.codesquare.space:9999/v2.0/networks" | python -m json.tool | jq '.networks[]' | jq 'select(.name == "heat-net")' | jq '.id'
 ```
 * 인스턴스 생성 시, 유동 ip 할당을 위해 **인스턴스 id**를 미리 저장해둡니다.
 ## VM 설정 및 외부 ip 주소와 코드서버 연결
@@ -173,19 +175,19 @@ curl -s \
     "fixed_ip_address":[address],
     "port_id":[port_id]
     }
-}' "http://34.64.118.138:9999/v2.0/floatingips" | python -m json.tool
+}' "http://stack.codesquare.space:9999/v2.0/floatingips" | python -m json.tool
 ```
 floating_network_id는 유동 ip 주소를 받을 네트워크(public 네트워크)의 id이며, 다음과 같은 요청으로 [network_id]를 얻을 수 있습니다.
 ```bash
 curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138:9999/v2.0/networks" | python -m json.tool | jq '.networks[]' | jq 'select(.name == "public")' | jq '.id'
+"http://stack.codesquare.space:9999/v2.0/networks" | python -m json.tool | jq '.networks[]' | jq 'select(.name == "public")' | jq '.id'
 ```
 fixed_ip_address는 인스턴스 생성 시 자동으로 할당되는 내부 ip주소이며, 다음과 같은 요청으로 [address]를 얻을 수 있습니다.
 ```bash
 curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138/compute/v2.1/servers/[instance id]" | python -m json.tool | jq '.server.addresses' | jq '.["heat-net"][]' | jq '.addr'
+"http://stack.codesquare.space/compute/v2.1/servers/[instance id]" | python -m json.tool | jq '.server.addresses' | jq '.["heat-net"][]' | jq '.addr'
 ```
 * [instance id]는 생성한 instance의 id값을 넣어주면 됩니다. 
 * (10.28 추가) 네트워크 구조 변경에 따라 내부 ip주소를 찾는 방법이 약간 달라졌습니다. 위의 url로 GET 요청 시 아래와 같은 response를 얻을 수 있습니다.
@@ -223,7 +225,7 @@ port_id는 생성한 instance 인터페이스의 포트 id이며, 다음과 같�
 ```bash
 curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138:9999/v2.0/ports" | python -m json.tool | jq '.ports[]' | jq 'select(.fixed_ips[].ip_address == [fixed_addr])' | jq '.id'
+"http://stack.codesquare.space:9999/v2.0/ports" | python -m json.tool | jq '.ports[]' | jq 'select(.fixed_ips[].ip_address == [fixed_addr])' | jq '.id'
 ```
 [fixed_addr]는 위의 fixed_ip_address에 들어가는 [address]값(인스턴스의 내부 고정 ip주소)을 넣어주면 됩니다.
 
@@ -246,37 +248,37 @@ name에는 사용자id를, [floating_addr]은 위에서 할당된 floating ip �
 curl -X DELETE \
 -H "X-Auth-Token: $OS_TOKEN" \
 -H "Accept: application/json" \
-"http://34.64.118.138:9999/v2.0/floatingips/[floatingIp_id]" | python -m json.tool
+"http://stack.codesquare.space:9999/v2.0/floatingips/[floatingIp_id]" | python -m json.tool
 ```
 [floatingIp_id]는 다음과 같은 방법으로 얻을 수 있습니다.
 ```bash
 curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138:9999/v2.0/floatingips" | python -m json.tool | jq '.floatingips[]' | jq 'select(.floating_ip_address == [floating_ip])' | jq '.id'
+"http://stack.codesquare.space:9999/v2.0/floatingips" | python -m json.tool | jq '.floatingips[]' | jq 'select(.floating_ip_address == [floating_ip])' | jq '.id'
 ```
 [floating_ip]는 다음과 같은 방법으로 얻을 수 있습니다.
 ```bash
 curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138/compute/v2.1/servers/7fc53fb9-2fbc-43ae-9759-0c9c85c5933c" | python -m json.tool | jq '.server.addresses' | jq '.["heat-net"][]' | jq 'select(."OS-EXT-IPS:type" == "floating")' | jq '.addr'
+"http://stack.codesquare.space/compute/v2.1/servers/7fc53fb9-2fbc-43ae-9759-0c9c85c5933c" | python -m json.tool | jq '.server.addresses' | jq '.["heat-net"][]' | jq 'select(."OS-EXT-IPS:type" == "floating")' | jq '.addr'
 ```
 
 ### Openstack Instance 삭제
 ```bash
 curl -X DELETE \
 -H "X-Auth-Token:$OS_TOKEN" \
-"http://34.64.118.138/compute/v2.1/servers/[Instance_Id]"
+"http://stack.codesquare.space/compute/v2.1/servers/[Instance_Id]"
 ```
 [Instance_Id]는 다음과 같은 방법으로 얻을 수 있습니다.
 ```bash
 curl -X GET \
 -H "X-Auth-Token: $OS_TOKEN" \
-"http://34.64.118.138/compute/v2.1/servers?all_tenants" | python -m json.tool | jq '.servers[]' | jq 'select(.name == [사용자id])' | jq '.id'
+"http://stack.codesquare.space/compute/v2.1/servers?all_tenants" | python -m json.tool | jq '.servers[]' | jq 'select(.name == [사용자id])' | jq '.id'
 ```
 
 ### url 연결 해제
 ```bash
 curl -X DELETE \
-"http://34.64.118.138:8890/urlinfo/[사용자id]"
+"http://stack.codesquare.space:8890/urlinfo/[사용자id]"
 ```
 
